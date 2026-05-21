@@ -1,75 +1,18 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MTO Rota Generator</title>
+  <title>MTO Rota System</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
   <header>
-    <h1>MTO Rota Generator</h1>
+    <h1>MTO Rota System</h1>
   </header>
 
-  <div class="top-section">
-
-    <!-- ===========================
-       OPERATORS PANEL
-  ============================ -->
-    <div class="panel">
-      <h2>Operators</h2>
-
-      <div class="input-row">
-        <input id="opInput" type="text" placeholder="Add operator...">
-        <button
-          onclick="addOperator(document.getElementById('opInput').value);  document.getElementById('opInput').value = '';document.getElementById('opInput').focus();">Add</button>
-      </div>
-
-      <ul id="opList" class="list"></ul>
-    </div>
-  </div>
-
-  <!-- ===========================
-     BREAK GRIDS
-=========================== -->
-  <div class="panel">
-    <h2>Break Groups</h2>
-
-    <h3>Line 1</h3>
-    <table id="breakGridLine1" class="rota-table"></table>
-
-    <h3>Line 2</h3>
-    <table id="breakGridLine2" class="rota-table"></table>
-  </div>
-
-  <!-- ===========================
-     GENERATE BUTTON
-=========================== -->
-  <div class="generate-section">
-    <button onclick="renderRotas()">Generate Rota</button>
-  </div>
-
-  <!-- ===========================
-     LINE 1 ROTA
-=========================== -->
-  <div class="rota-container">
-    <h2>WHITE SHIFT MTO LINE 1</h2>
-    <table id="rotaLine1" class="rota-table"></table>
-    <div id="extrasLine1"></div>
-  </div>
-
-  <!-- ===========================
-     LINE 2 ROTA
-=========================== -->
-  <div class="rota-container">
-    <h2>WHITE SHIFT MTO LINE 2</h2>
-    <table id="rotaLine2" class="rota-table"></table>
-    <div id="extrasLine2"></div>
-  </div>
-
-  <script src="script/script.js"></script>
+  <main class="main-menu">
+    <button onclick="location.href='staff.html'">Staff Management</button>
+    <button onclick="location.href='rota.html'">Rota Planner</button>
+  </main>
 </body>
-
 </html>

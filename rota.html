@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rota Planner</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Rota Planner</h1>
+    <nav>
+      <button onclick="location.href='index.html'">Home</button>
+      <button onclick="location.href='staff.html'">Staff Management</button>
+    </nav>
+  </header>
+
+  <main class="page-container">
+
+    <section class="panel">
+      <h2>Options</h2>
+      <label>
+        Line:
+        <select id="lineSelect">
+          <option value="1">Line 1</option>
+          <option value="2">Line 2</option>
+        </select>
+      </label>
+      <button id="generateBtn">Generate Rota</button>
+    </section>
+
+    <section class="rota-container">
+      <h2 id="rotaTitle">MTO Rota</h2>
+      <table id="rotaTable" class="rota-table"></table>
+      <div id="extras"></div>
+    </section>
+
+  </main>
+
+  <script src="script/data.js"></script>
+  <script src="script/rota.js"></script>
+</body>
+</html>
