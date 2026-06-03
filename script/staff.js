@@ -1,290 +1,398 @@
 /* ============================================================
    DATA MODEL
 ============================================================ */
-let operators = []; // { name, line, breakGroup, oee, extra, puckClean, solution, mto1, mto2 }
-let training = {};  // { operatorName: Set([...modules]) }
+let operators = [];
+let training = {}; // name -> array of module names
 
 /* ============================================================
-   SAVE / LOAD
+   LOAD / SAVE
 ============================================================ */
-function saveData() {
-  localStorage.setItem("operators", JSON.stringify(operators));
-  localStorage.setItem(
-    "training",
-    JSON.stringify(
-      Object.fromEntries(
-        Object.entries(training).map(([k, v]) => [k, [...v]])
-      )
-    )
-  );
-}
-
-function loadData() {
+function loadDataStaff() {
   const ops = JSON.parse(localStorage.getItem("operators") || "[]");
   const trn = JSON.parse(localStorage.getItem("training") || "{}");
 
   operators = ops.map(o => ({
     name: o.name,
     line: o.line ?? 1,
-    breakGroup: o.breakGroup ?? 1,
+    breakGroup: parseInt(o.breakGroup ?? 1, 10),
+
     oee: !!o.oee,
     extra: !!o.extra,
     puckClean: !!o.puckClean,
     solution: !!o.solution,
-    mto1: !!o.mto1,
-    mto2: !!o.mto2
+    rubbish1: !!o.rubbish1,
+    rubbish2: !!o.rubbish2,
+
+    type: (o.type === "agency" || o.type === "permanent") ? o.type : "__",
+    inTraining: !!o.inTraining
   }));
 
   training = {};
   for (const [k, arr] of Object.entries(trn)) {
-    training[k] = new Set(arr);
+    training[k] = Array.isArray(arr) ? arr.slice() : [];
   }
+}
 
-  // Ensure every operator has a training set
-  for (const op of operators) {
-    if (!training[op.name]) {
-      training[op.name] = new Set();
-    }
-  }
+function saveDataStaff() {
+  const opsToSave = operators.map(o => ({
+    name: o.name,
+    line: o.line,
+    breakGroup: o.breakGroup,
+    oee: o.oee,
+    extra: o.extra,
+    puckClean: o.puckClean,
+    solution: o.solution,
+    rubbish1: o.rubbish1,
+    rubbish2: o.rubbish2,
+    type: o.type,
+    inTraining: o.inTraining
+  }));
 
-  sortOperators();
-  renderOperators();
-  renderTrainingMatrix();
+  localStorage.setItem("operators", JSON.stringify(opsToSave));
+  localStorage.setItem("training", JSON.stringify(training));
 }
 
 /* ============================================================
-   OPERATORS
+   OPERATOR LIST UI
 ============================================================ */
-function sortOperators() {
-  operators.sort((a, b) => a.name.localeCompare(b.name));
-}
-
 function addOperator(name) {
   name = name.trim();
-  if (!name || operators.some(o => o.name === name)) return;
+  if (!name) return;
+  if (operators.some(o => o.name.toLowerCase() === name.toLowerCase())) return;
 
   operators.push({
     name,
-    line: 0,
-    breakGroup: 1,
+    line: "__",
+    breakGroup: "__",
     oee: false,
     extra: false,
     puckClean: false,
     solution: false,
-    mto1: false,
-    mto2: false
+    rubbish1: false,
+    rubbish2: false,
+    type: "__",
+    inTraining: false
   });
 
-  training[name] = new Set();
-
-  sortOperators();
-  saveData();
-  renderOperators();
+  saveDataStaff();
+  renderOperatorList();
   renderTrainingMatrix();
 }
 
 function deleteOperator(name) {
   operators = operators.filter(o => o.name !== name);
   delete training[name];
-
-  sortOperators();
-  saveData();
-  renderOperators();
+  saveDataStaff();
+  renderOperatorList();
   renderTrainingMatrix();
 }
 
-function updateOperatorField(name, field, value) {
-  const op = operators.find(o => o.name === name);
-  if (!op) return;
-  op[field] = value;
-  saveData();
-}
-
-/* ============================================================
-   OPERATOR UI
-============================================================ */
-function renderOperators() {
+function renderOperatorList() {
   const list = document.getElementById("opList");
+  if (!list) return;
   list.innerHTML = "";
 
-  operators.forEach(op => {
-    const li = document.createElement("li");
-    li.className = "list-item";
-    li.style.display = "flex";
-    li.style.flexDirection = "column";
-    li.style.alignItems = "flex-start";
+  operators
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(op => {
 
-    const topRow = document.createElement("div");
-    topRow.style.display = "flex";
-    topRow.style.justifyContent = "space-between";
-    topRow.style.width = "100%";
-    topRow.style.marginBottom = "4px";
+      const li = document.createElement("li");
+      li.className = "list-item";
 
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = op.name;
-    nameSpan.style.fontWeight = "bold";
+      const title = document.createElement("div");
+      title.textContent = op.name;
+      title.style.fontWeight = "600";
+      title.style.marginBottom = "4px";
 
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "✖";
-    delBtn.className = "delete-btn";
-    delBtn.onclick = () => {
-      deleteOperator(op.name);
-    };
+      const row = document.createElement("div");
+      row.className = "operator-row";
 
-    topRow.appendChild(nameSpan);
-    topRow.appendChild(delBtn);
+      function makeSelect(labelText, value, options, onChange) {
+        const wrapper = document.createElement("label");
+        wrapper.className = "operator-field";
 
-    const controls = document.createElement("div");
-    controls.style.display = "flex";
-    controls.style.flexWrap = "wrap";
-    controls.style.gap = "6px";
+        const span = document.createElement("span");
+        span.textContent = labelText;
+        wrapper.appendChild(span);
 
-    function makeSelect(label, field, options) {
-      const wrap = document.createElement("label");
-      wrap.style.fontSize = "12px";
+        const sel = document.createElement("select");
+        options.forEach(opt => {
+          const oEl = document.createElement("option");
+          oEl.value = opt.value;
+          oEl.textContent = opt.label;
+          if (opt.value === value) oEl.selected = true;
+          sel.appendChild(oEl);
+        });
+        sel.onchange = () => onChange(sel.value);
+        wrapper.appendChild(sel);
 
-      const span = document.createElement("span");
-      span.textContent = label + " ";
+        return wrapper;
+      }
 
-      const sel = document.createElement("select");
-      options.forEach(([val, text]) => {
-        const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = text;
-        sel.appendChild(opt);
-      });
+      const lineSel = makeSelect(
+        "Line:",
+        String(op.line),
+        [
+          { value: "__", label: "__" },
+          { value: "1", label: "1" },
+          { value: "2", label: "2" }
+        ],
+        v => {
+          op.line = parseInt(v, 10);
+          saveDataStaff();
+        }
+      );
 
-      sel.value = String(op[field]);
-      sel.onchange = () => {
-        let v = sel.value;
-        if (field === "line" || field === "breakGroup") v = parseInt(v, 10);
-        else v = v === "true";
-        updateOperatorField(op.name, field, v);
-      };
+      const breakSel = makeSelect(
+        "Break:",
+        String(op.breakGroup),
+        [
+          { value: "__", label: "__" },
+          { value: "1", label: "1st" },
+          { value: "2", label: "2nd" }
+        ],
+        v => {
+          op.breakGroup = parseInt(v, 10);
+          saveDataStaff();
+        }
+      );
 
-      wrap.appendChild(span);
-      wrap.appendChild(sel);
-      return wrap;
-    }
+      const oeeSel = makeSelect(
+        "OEE:",
+        op.oee ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.oee = (v === "yes");
+          saveDataStaff();
+        }
+      );
 
-    controls.appendChild(makeSelect("Line", "line", [[0, "--"], [1, "1"], [2, "2"]]));
-    controls.appendChild(makeSelect("Break", "breakGroup", [[1, "1st"], [2, "2nd"]]));
-    controls.appendChild(makeSelect("OEE", "oee", [["false", "No"], ["true", "Yes"]]));
-    controls.appendChild(makeSelect("EXTRA", "extra", [["false", "No"], ["true", "Yes"]]));
-    controls.appendChild(makeSelect("Puck Clean", "puckClean", [["false", "No"], ["true", "Yes"]]));
-    controls.appendChild(makeSelect("Solution", "solution", [["false", "No"], ["true", "Yes"]]));
-    controls.appendChild(makeSelect("Rubbish Line 1", "mto1", [["false", "No"], ["true", "Yes"]]));
-    controls.appendChild(makeSelect("Rubbish Line 2", "mto2", [["false", "No"], ["true", "Yes"]]));
+      const extraSel = makeSelect(
+        "EXTRA:",
+        op.extra ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.extra = (v === "yes");
+          saveDataStaff();
+        }
+      );
 
-    li.appendChild(topRow);
-    li.appendChild(controls);
-    list.appendChild(li);
-  });
+      const puckSel = makeSelect(
+        "Puck Clean:",
+        op.puckClean ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.puckClean = (v === "yes");
+          saveDataStaff();
+        }
+      );
+
+      const solSel = makeSelect(
+        "Solution:",
+        op.solution ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.solution = (v === "yes");
+          saveDataStaff();
+        }
+      );
+
+      const rub1Sel = makeSelect(
+        "Rubbish L1:",
+        op.rubbish1 ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.rubbish1 = (v === "yes");
+          saveDataStaff();
+        }
+      );
+
+      const rub2Sel = makeSelect(
+        "Rubbish L2:",
+        op.rubbish2 ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.rubbish2 = (v === "yes");
+          saveDataStaff();
+        }
+      );
+
+      const typeSel = makeSelect(
+        "Type:",
+        op.type,
+        [
+          { value: "__", label: "__" },
+          { value: "permanent", label: "Permanent" },
+          { value: "agency", label: "Agency" }
+        ],
+        v => {
+          op.type = v === "agency" ? "agency" : "permanent";
+          saveDataStaff();
+          renderTrainingMatrix();
+        }
+      );
+
+      const trainingSel = makeSelect(
+        "Training:",
+        op.inTraining ? "yes" : "no",
+        [
+          { value: "no", label: "No" },
+          { value: "yes", label: "Yes" }
+        ],
+        v => {
+          op.inTraining = (v === "yes");
+          saveDataStaff();
+          renderTrainingMatrix();
+        }
+      );
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "X";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = () => deleteOperator(op.name);
+
+      row.appendChild(lineSel);
+      row.appendChild(breakSel);
+      row.appendChild(oeeSel);
+      row.appendChild(extraSel);
+      row.appendChild(puckSel);
+      row.appendChild(solSel);
+      row.appendChild(rub1Sel);
+      row.appendChild(rub2Sel);
+      row.appendChild(typeSel);
+      row.appendChild(trainingSel);
+      row.appendChild(delBtn);
+
+      li.appendChild(title);
+      li.appendChild(row);
+      list.appendChild(li);
+    });
 }
 
 /* ============================================================
-   TRAINING MATRIX (A2 + T3 + C3 + H2)
+   TRAINING MATRIX
 ============================================================ */
+function toggleTraining(name, moduleName) {
+  if (!training[name]) training[name] = [];
+  const arr = training[name];
+  const idx = arr.indexOf(moduleName);
+  if (idx === -1) arr.push(moduleName);
+  else arr.splice(idx, 1);
+  saveDataStaff();
+  renderTrainingMatrix();
+}
+
 function renderTrainingMatrix() {
   const container = document.getElementById("trainingMatrix");
+  if (!container) return;
+
   container.innerHTML = "";
 
-  if (!operators.length) {
-    container.innerHTML = "<p style='font-size:12px;'>No operators yet.</p>";
-    return;
-  }
+  // FIX: use filtered module list
+  const trainingModules = modules.filter(m => m.toLowerCase().trim() !== "training");
 
   const grid = document.createElement("div");
   grid.className = "training-grid";
+  grid.style.gridTemplateColumns = `150px repeat(${trainingModules.length}, 100px)`;
 
-  // First row: empty top-left + module headers
-  const empty = document.createElement("div");
-  empty.className = "training-header-cell";
-  empty.textContent = "Operator / Module";
-  grid.appendChild(empty);
+  const headerName = document.createElement("div");
+  headerName.className = "training-header-cell";
+  headerName.textContent = "Operator";
+  grid.appendChild(headerName);
 
-  modules.forEach(mod => {
+  // FIX: header uses trainingModules
+  trainingModules.forEach(m => {
     const h = document.createElement("div");
     h.className = "training-header-cell";
-    h.textContent = mod;
+    h.textContent = m;
     grid.appendChild(h);
   });
 
-  // Rows: operator name + dots
-  operators.forEach(op => {
-    const nameCell = document.createElement("div");
-    nameCell.className = "training-operator-cell";
-    nameCell.textContent = op.name;
-    grid.appendChild(nameCell);
+  operators
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(op => {
 
-    modules.forEach(mod => {
-      const cell = document.createElement("div");
-      cell.className = "training-cell";
+      const opCell = document.createElement("div");
+      opCell.className = "training-operator-cell";
+      opCell.textContent = op.name;
 
-      const dot = document.createElement("span");
-      dot.className = "training-dot";
-      dot.dataset.operator = op.name;
-      dot.dataset.module = mod;
-
-      const isTrained = training[op.name] && training[op.name].has(mod);
-      if (isTrained) {
-        dot.classList.add("trained");
-        dot.textContent = "●";
-      } else {
-        dot.classList.add("untrained");
-        dot.textContent = "○";
+      if (op.inTraining) {
+        opCell.classList.add("operator-in-training");
       }
 
-      // Make the whole rectangle clickable
-      cell.onclick = () => toggleTraining(op.name, mod, dot);
+      if (op.type === "agency") {
+        opCell.classList.add("operator-agency");
+      } else if (op.type === "permanent") {
+        opCell.classList.add("operator-permanent");
+      }
 
-      cell.appendChild(dot);
-      grid.appendChild(cell);
+      grid.appendChild(opCell);
+
+      trainingModules.forEach(m => {
+        const cell = document.createElement("div");
+        cell.className = "training-cell";
+
+        const dot = document.createElement("span");
+        dot.className = "training-dot";
+
+        const trainedList = training[op.name] || [];
+        const isTrained = trainedList.includes(m);
+
+        dot.textContent = isTrained ? "●" : "○";
+        dot.classList.add(isTrained ? "trained" : "untrained");
+
+        cell.onclick = () => toggleTraining(op.name, m);
+
+        cell.appendChild(dot);
+        grid.appendChild(cell);
+      });
     });
-  });
 
   container.appendChild(grid);
-}
-
-function toggleTraining(name, moduleName, dotEl) {
-  if (!training[name]) {
-    training[name] = new Set();
-  }
-
-  if (training[name].has(moduleName)) {
-    training[name].delete(moduleName);
-    dotEl.classList.remove("trained");
-    dotEl.classList.add("untrained");
-    dotEl.textContent = "○";
-  } else {
-    training[name].add(moduleName);
-    dotEl.classList.remove("untrained");
-    dotEl.classList.add("trained");
-    dotEl.textContent = "●";
-  }
-
-  saveData();
 }
 
 /* ============================================================
    INIT
 ============================================================ */
 window.addEventListener("load", () => {
-  loadData();
+  loadDataStaff();
 
-  const opInput = document.getElementById("opInput");
   const addBtn = document.getElementById("addOpBtn");
+  const input = document.getElementById("opInput");
 
   addBtn.onclick = () => {
-    addOperator(opInput.value);
-    opInput.value = "";
-    opInput.focus();
+    addOperator(input.value);
+    input.value = "";
+    input.focus();
   };
 
-  opInput.addEventListener("keydown", e => {
+  input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
-      addOperator(opInput.value);
-      opInput.value = "";
+      addOperator(input.value);
+      input.value = "";
     }
   });
+
+  renderOperatorList();
+  renderTrainingMatrix();
 });

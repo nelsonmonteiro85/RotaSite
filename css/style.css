@@ -139,9 +139,9 @@ header nav button:hover {
 }
 
 
-.rota-table th {
-  /* background: #eee; */
-}
+/* .rota-table th {
+  background: #eee;
+} */
 
 /* === ROTA MODULE COLOURS  === */
 
@@ -176,15 +176,18 @@ header nav button:hover {
 /* -----------------------------------------------------------
    EXTRAS LAYOUT
 ----------------------------------------------------------- */
-.extras-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+.extras-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  gap: 12px;
+  margin-top: 20px;
 }
 
-.extras-row .rota-table {
-  flex: 1 1 220px;
+.extras-cell {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 /* -----------------------------------------------------------
@@ -239,6 +242,33 @@ header nav button:hover {
 .training-cell:hover {
   background: #f3e9ff; /* light purple tint */
   cursor: pointer;
+}
+
+/* Operator row layout in staff page */
+.operator-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.operator-field {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+}
+
+.operator-field span {
+  margin-bottom: 2px;
+}
+
+/* Permanent / Agency colours in training matrix */
+.operator-permanent {
+  background-color: #d9eaf7;
+}
+
+.operator-agency {
+  background-color: #ffe6cc;
 }
 
 
