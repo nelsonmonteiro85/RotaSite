@@ -156,45 +156,45 @@ function generateRotaForLine(line) {
 
             const prevSame = prevRow ? prevRow.cells[mod] : null;
 
-            /* ============================================================
-                 TEAM LEADER MANUAL OVERRIDE — SOLUTION → QC1
-            ============================================================ */
-            if (mod === "QC1") {
-                const manualSolution = operators.find(o =>
-                    o.solution === true &&
-                    o.line === line
-                );
+            // /* ============================================================
+            //      TEAM LEADER MANUAL OVERRIDE — SOLUTION → QC1
+            // ============================================================ */
+            // if (mod === "QC1") {
+            //     const manualSolution = operators.find(o =>
+            //         o.solution === true &&
+            //         o.line === line
+            //     );
 
-                if (manualSolution) {
-                    row.cells[mod] = manualSolution.name;
-                    used.add(manualSolution.name);
+            //     if (manualSolution) {
+            //         row.cells[mod] = manualSolution.name;
+            //         used.add(manualSolution.name);
 
-                    operatorHistory[manualSolution.name] =
-                        (operatorHistory[manualSolution.name] || 0) + 1;
+            //         operatorHistory[manualSolution.name] =
+            //             (operatorHistory[manualSolution.name] || 0) + 1;
 
-                    return; // skip all rota logic for this module
-                }
-            }
+            //         return; // skip all rota logic for this module
+            //     }
+            // }
 
-            /* ============================================================
-                TEAM LEADER MANUAL OVERRIDE — RUBBISH → PEEL 2
-            ============================================================ */
-            if (mod === "Peel 2") {
-                const manualRubbish = operators.find(o =>
-                    (o.rubbish1 || o.rubbish2) &&
-                    o.line === line
-                );
+            // /* ============================================================
+            //     TEAM LEADER MANUAL OVERRIDE — RUBBISH → PEEL 2
+            // ============================================================ */
+            // if (mod === "Peel 2") {
+            //     const manualRubbish = operators.find(o =>
+            //         (o.rubbish1 || o.rubbish2) &&
+            //         o.line === line
+            //     );
 
-                if (manualRubbish) {
-                    row.cells[mod] = manualRubbish.name;
-                    used.add(manualRubbish.name);
+            //     if (manualRubbish) {
+            //         row.cells[mod] = manualRubbish.name;
+            //         used.add(manualRubbish.name);
 
-                    operatorHistory[manualRubbish.name] =
-                        (operatorHistory[manualRubbish.name] || 0) + 1;
+            //         operatorHistory[manualRubbish.name] =
+            //             (operatorHistory[manualRubbish.name] || 0) + 1;
 
-                    return; // skip all rota logic for this module
-                }
-            }
+            //         return; // skip all rota logic for this module
+            //     }
+            // }
 
             /* ============================================================
                STEP 1 — STRICT TRAINED CANDIDATES
