@@ -3,7 +3,6 @@ function renderExtras(assignments, operators, line, extrasDiv) {
   const lastRow = assignments[assignments.length - 1] || { cells: {} };
   const opsLine = operators.filter(o => o.line === line);
 
-
   function getAllNames(field) {
     const list = opsLine.filter(o => o[field]).map(o => o.name);
     return list.length ? list.join(" / ") : "N/A";

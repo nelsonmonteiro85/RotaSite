@@ -331,6 +331,7 @@ window.addEventListener("load", () => {
     const btn = document.getElementById("generateBtn");
 
     btn.onclick = () => {
+        loadDataRota(); // ← THIS is the missing piece
         generateRotaForLine(parseInt(lineSelect.value, 10));
     };
 
