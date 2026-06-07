@@ -9,13 +9,50 @@ body {
   color: #333;
 }
 
-header {
-  background: #4b2a7a;
+.bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* Glass panel */
+.glass-panel {
+  position: absolute;
+  /* top: 50%; */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 140%;
+  padding: 30px;
+  border-radius: 20px;
+  z-index: -1;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(75, 42, 122, 0.9);
+  box-shadow: 0 8px 32px rgba(75, 42, 122, 0.9);
+
+  text-align: center;
   color: #fff;
-  padding: 10px 20px;
+}
+
+header {
+  background: linear-gradient(to bottom,
+      #4b2a7a 0%,
+      rgba(75, 42, 122, 0.5) 60%,
+      rgba(75, 42, 122, 0.2) 100%);
+  color: #fff;
+  padding: 30px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 0 0 10px 10px;
 }
 
 header h1 {
@@ -49,7 +86,7 @@ header nav button:hover {
   background: #fff;
   border-radius: 6px;
   padding: 15px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .panel h2 {
@@ -133,8 +170,9 @@ header nav button:hover {
 /* Break column only */
 .rota-table th:first-child,
 .rota-table td:first-child {
-  width: 230px;        /* smaller width */
-  font-size: 16px;  
+  width: 230px;
+  /* smaller width */
+  font-size: 16px;
   font-weight: 540;
 }
 
@@ -146,31 +184,49 @@ header nav button:hover {
 /* === ROTA MODULE COLOURS  === */
 
 /* INFEED / FILL & CLOSE */
-.rota-col-infeedfc { background: #B8CCE4; }
+.rota-col-infeedfc {
+  background: #B8CCE4;
+}
 
 /* Peel 1 */
-.rota-col-peel1 { background: #fde9d9; }
+.rota-col-peel1 {
+  background: #fde9d9;
+}
 
 /* Peel 2 */
-.rota-col-peel2 { background: #fde9d9; }
+.rota-col-peel2 {
+  background: #fde9d9;
+}
 
 /* Rinse Station */
-.rota-col-rinsestation { background: #e8d4e5; }
+.rota-col-rinsestation {
+  background: #e8d4e5;
+}
 
 /* Lens Transfer */
-.rota-col-lenstransfer { background: #e8d4e5; }
+.rota-col-lenstransfer {
+  background: #e8d4e5;
+}
 
 /* Inspection */
-.rota-col-inspection { background: #ffff66; }
+.rota-col-inspection {
+  background: #ffff66;
+}
 
 /* Training */
-.rota-col-training { background: #e6b8b7; }
+.rota-col-training {
+  background: #e6b8b7;
+}
 
 /* QC1 */
-.rota-col-qc1 { background: #00B050; }
+.rota-col-qc1 {
+  background: #00B050;
+}
 
 /* Puck Drying */
-.rota-col-puckdrying { background: #ffce00; }
+.rota-col-puckdrying {
+  background: #ffce00;
+}
 
 
 /* -----------------------------------------------------------
@@ -195,7 +251,8 @@ header nav button:hover {
 ----------------------------------------------------------- */
 .training-grid {
   display: grid;
-  grid-template-columns: 160px repeat(9, 1fr); /* EXACT number of module columns */
+  grid-template-columns: 160px repeat(9, 1fr);
+  /* EXACT number of module columns */
   gap: 4px;
   align-items: center;
   font-size: 12px;
@@ -232,7 +289,8 @@ header nav button:hover {
 }
 
 .training-dot.trained {
-  color: #6A1B9A; /* CooperVision purple */
+  color: #6A1B9A;
+  /* CooperVision purple */
 }
 
 .training-dot.untrained {
@@ -240,7 +298,8 @@ header nav button:hover {
 }
 
 .training-cell:hover {
-  background: #f3e9ff; /* light purple tint */
+  background: #f3e9ff;
+  /* light purple tint */
   cursor: pointer;
 }
 
@@ -276,30 +335,49 @@ header nav button:hover {
    MAIN MENU
 ----------------------------------------------------------- */
 .main-menu {
-  padding: 40px 20px;
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  transform: translate(-10%, -50%);
+
   display: flex;
-  justify-content: center;
   gap: 20px;
 }
 
 .main-menu button {
-  padding: 16px 24px;
+  padding: 40px 60px;
   font-size: 16px;
-  border-radius: 6px;
   border: none;
-  background: #4b2a7a;
+  border-radius: 16px;
+
+  background: linear-gradient(to bottom,
+      #4b2a7a 0%,
+      rgba(75, 42, 122, 0.5) 60%,
+      rgba(75, 42, 122, 0.2) 100%);
+
   color: #fff;
   cursor: pointer;
   font-weight: 600;
+
+  transition: 0.2s ease;
 }
 
 .main-menu button:hover {
-  background: #6a3fa5;
+  background: linear-gradient(to bottom,
+      rgba(75, 42, 122, 0.2) 100%,
+      rgba(75, 42, 122, 0.5) 60%,
+      #4b2a7a 0%);
+  transform: translateY(-10px);
+  color: #4b2a7a;
+}
+
+.main-menu button:active {
+  transform: translateY(0);
 }
 
 @media print {
-    body {
-        max-width: 1000px;
-        margin: 0 auto;
-    }
+  body {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
 }
