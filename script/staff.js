@@ -3,53 +3,96 @@
 ============================================================ */
 let operators = [];
 let training = {}; // name -> array of module names
+let dirty = false;
 
-/* ============================================================
-   LOAD / SAVE
-============================================================ */
-function loadDataStaff() {
-  const ops = JSON.parse(localStorage.getItem("operators") || "[]");
-  const trn = JSON.parse(localStorage.getItem("training") || "{}");
-
-  operators = ops.map(o => ({
-    name: o.name,
-    line: o.line ?? 1,
-    breakGroup: parseInt(o.breakGroup ?? 1, 10),
-
-    oee: !!o.oee,
-    extra: !!o.extra,
-    puckClean: !!o.puckClean,
-    solution: !!o.solution,
-    rubbish1: !!o.rubbish1,
-    rubbish2: !!o.rubbish2,
-
-    type: (o.type === "agency" || o.type === "permanent") ? o.type : "__",
-    inTraining: !!o.inTraining
-  }));
-
-  training = {};
-  for (const [k, arr] of Object.entries(trn)) {
-    training[k] = Array.isArray(arr) ? arr.slice() : [];
-  }
+function markDirty() {
+  dirty = true;
 }
 
-function saveDataStaff() {
-  const opsToSave = operators.map(o => ({
-    name: o.name,
-    line: o.line,
-    breakGroup: o.breakGroup,
-    oee: o.oee,
-    extra: o.extra,
-    puckClean: o.puckClean,
-    solution: o.solution,
-    rubbish1: o.rubbish1,
-    rubbish2: o.rubbish2,
-    type: o.type,
-    inTraining: o.inTraining
-  }));
+window.addEventListener("beforeunload", (e) => {
+  if (!dirty) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 
-  localStorage.setItem("operators", JSON.stringify(opsToSave));
-  localStorage.setItem("training", JSON.stringify(training));
+/* ============================================================
+   SAVE TO GITHUB
+============================================================ */
+function getOperatorsFromUI() {
+  const list = document.getElementById("opList");
+  if (!list) return operators;
+
+  const newOps = [];
+
+  list.querySelectorAll("li").forEach(li => {
+    const name = li.querySelector("div").textContent.trim();
+    const selects = li.querySelectorAll("select");
+
+    const [
+      lineSel,
+      breakSel,
+      oeeSel,
+      extraSel,
+      puckSel,
+      solSel,
+      rub1Sel,
+      rub2Sel,
+      typeSel,
+      trainingSel
+    ] = selects;
+
+    newOps.push({
+      name,
+      line: lineSel.value === "__" ? "__" : parseInt(lineSel.value, 10),
+      breakGroup: breakSel.value === "__" ? "__" : parseInt(breakSel.value, 10),
+      oee: oeeSel.value === "yes",
+      extra: extraSel.value === "yes",
+      puckClean: puckSel.value === "yes",
+      solution: solSel.value === "yes",
+      rubbish1: rub1Sel.value === "yes",
+      rubbish2: rub2Sel.value === "yes",
+      type: typeSel.value,
+      inTraining: trainingSel.value === "yes"
+    });
+  });
+
+  return newOps;
+}
+
+function getTrainingFromUI() {
+  const result = {};
+  operators.forEach(op => {
+    result[op.name] = training[op.name] ? [...training[op.name]] : [];
+  });
+  return result;
+}
+
+async function saveToGitHub() {
+    const operatorsToSave = getOperatorsFromUI();
+    const trainingToSave = getTrainingFromUI();
+
+    const ok1 = await saveGitHubJSON(GH_OPERATORS_PATH, operatorsToSave);
+    const ok2 = await saveGitHubJSON(GH_TRAINING_PATH, trainingToSave);
+
+    if (ok1 && ok2) {
+        // ⭐ Update global variables so UI + memory match what was saved
+        operators = operatorsToSave;
+        training = trainingToSave;
+
+        dirty = false;
+        alert("Saved!");
+    }
+}
+
+/* ============================================================
+   LOAD FROM GITHUB
+============================================================ */
+async function loadDataStaff() {
+  operators = await loadGitHubJSON(GH_OPERATORS_PATH);
+  training = await loadGitHubJSON(GH_TRAINING_PATH);
+
+  renderOperatorList();
+  renderTrainingMatrix();
 }
 
 /* ============================================================
@@ -74,7 +117,7 @@ function addOperator(name) {
     inTraining: false
   });
 
-  saveDataStaff();
+  markDirty();
   renderOperatorList();
   renderTrainingMatrix();
 }
@@ -82,7 +125,8 @@ function addOperator(name) {
 function deleteOperator(name) {
   operators = operators.filter(o => o.name !== name);
   delete training[name];
-  saveDataStaff();
+
+  markDirty();
   renderOperatorList();
   renderTrainingMatrix();
 }
@@ -124,7 +168,10 @@ function renderOperatorList() {
           if (opt.value === value) oEl.selected = true;
           sel.appendChild(oEl);
         });
-        sel.onchange = () => onChange(sel.value);
+        sel.onchange = () => {
+          onChange(sel.value);
+          markDirty();
+        };
         wrapper.appendChild(sel);
 
         return wrapper;
@@ -138,10 +185,7 @@ function renderOperatorList() {
           { value: "1", label: "1" },
           { value: "2", label: "2" }
         ],
-        v => {
-          op.line = parseInt(v, 10);
-          saveDataStaff();
-        }
+        v => op.line = v === "__" ? "__" : parseInt(v, 10)
       );
 
       const breakSel = makeSelect(
@@ -152,10 +196,7 @@ function renderOperatorList() {
           { value: "1", label: "1st" },
           { value: "2", label: "2nd" }
         ],
-        v => {
-          op.breakGroup = parseInt(v, 10);
-          saveDataStaff();
-        }
+        v => op.breakGroup = v === "__" ? "__" : parseInt(v, 10)
       );
 
       const oeeSel = makeSelect(
@@ -165,10 +206,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.oee = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.oee = (v === "yes")
       );
 
       const extraSel = makeSelect(
@@ -178,10 +216,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.extra = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.extra = (v === "yes")
       );
 
       const puckSel = makeSelect(
@@ -191,10 +226,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.puckClean = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.puckClean = (v === "yes")
       );
 
       const solSel = makeSelect(
@@ -204,10 +236,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.solution = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.solution = (v === "yes")
       );
 
       const rub1Sel = makeSelect(
@@ -217,10 +246,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.rubbish1 = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.rubbish1 = (v === "yes")
       );
 
       const rub2Sel = makeSelect(
@@ -230,10 +256,7 @@ function renderOperatorList() {
           { value: "no", label: "No" },
           { value: "yes", label: "Yes" }
         ],
-        v => {
-          op.rubbish2 = (v === "yes");
-          saveDataStaff();
-        }
+        v => op.rubbish2 = (v === "yes")
       );
 
       const typeSel = makeSelect(
@@ -245,8 +268,7 @@ function renderOperatorList() {
           { value: "agency", label: "Agency" }
         ],
         v => {
-          op.type = v === "agency" ? "agency" : "permanent";
-          saveDataStaff();
+          op.type = v;
           renderTrainingMatrix();
         }
       );
@@ -260,7 +282,6 @@ function renderOperatorList() {
         ],
         v => {
           op.inTraining = (v === "yes");
-          saveDataStaff();
           renderTrainingMatrix();
         }
       );
@@ -293,11 +314,15 @@ function renderOperatorList() {
 ============================================================ */
 function toggleTraining(name, moduleName) {
   if (!training[name]) training[name] = [];
+
+  const key = moduleName.toLowerCase().replace(/[^a-z0-9]/g, "");
   const arr = training[name];
-  const idx = arr.indexOf(moduleName);
-  if (idx === -1) arr.push(moduleName);
+  const idx = arr.indexOf(key);
+
+  if (idx === -1) arr.push(key);
   else arr.splice(idx, 1);
-  saveDataStaff();
+
+  markDirty();
   renderTrainingMatrix();
 }
 
@@ -307,7 +332,6 @@ function renderTrainingMatrix() {
 
   container.innerHTML = "";
 
-  // FIX: use filtered module list
   const trainingModules = modules.filter(m => m.toLowerCase().trim() !== "training");
 
   const grid = document.createElement("div");
@@ -319,7 +343,6 @@ function renderTrainingMatrix() {
   headerName.textContent = "Operator";
   grid.appendChild(headerName);
 
-  // FIX: header uses trainingModules
   trainingModules.forEach(m => {
     const h = document.createElement("div");
     h.className = "training-header-cell";
@@ -336,15 +359,9 @@ function renderTrainingMatrix() {
       opCell.className = "training-operator-cell";
       opCell.textContent = op.name;
 
-      if (op.inTraining) {
-        opCell.classList.add("operator-in-training");
-      }
-
-      if (op.type === "agency") {
-        opCell.classList.add("operator-agency");
-      } else if (op.type === "permanent") {
-        opCell.classList.add("operator-permanent");
-      }
+      if (op.inTraining) opCell.classList.add("operator-in-training");
+      if (op.type === "agency") opCell.classList.add("operator-agency");
+      if (op.type === "permanent") opCell.classList.add("operator-permanent");
 
       grid.appendChild(opCell);
 
@@ -355,8 +372,9 @@ function renderTrainingMatrix() {
         const dot = document.createElement("span");
         dot.className = "training-dot";
 
+        const key = m.toLowerCase().replace(/[^a-z0-9]/g, "");
         const trainedList = training[op.name] || [];
-        const isTrained = trainedList.includes(m);
+        const isTrained = trainedList.includes(key);
 
         dot.textContent = isTrained ? "●" : "○";
         dot.classList.add(isTrained ? "trained" : "untrained");
@@ -392,7 +410,4 @@ window.addEventListener("load", () => {
       input.value = "";
     }
   });
-
-  renderOperatorList();
-  renderTrainingMatrix();
 });
