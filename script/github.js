@@ -12,12 +12,20 @@ const GH_TRAINING_PATH = "data/training.json";
 // TOKEN HANDLING
 // ===============================
 function getGitHubToken() {
-    return localStorage.getItem("github_token") || null;
-}
+    let token = localStorage.getItem("github_token");
 
-function askForGitHubToken() {
-    const token = prompt("Enter your GitHub Personal Access Token:");
-    if (token) localStorage.setItem("github_token", token);
+    // If no token stored, ask once
+    if (!token) {
+        token = prompt("Enter your GitHub Personal Access Token:");
+
+        if (token && token.trim() !== "") {
+            localStorage.setItem("github_token", token);
+        } else {
+            alert("A GitHub token is required to save data.");
+            return null;
+        }
+    }
+
     return token;
 }
 
