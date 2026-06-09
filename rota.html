@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Rota Planner</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
   <div class="glass-panel"></div>
   <header>
@@ -16,17 +18,15 @@
   </header>
 
   <main class="page-container">
-
-    <section class="panel">
-      <h2>Options</h2>
-      <label>
-        Line:
-        <select id="lineSelect">
-          <option value="1">Line 1</option>
-          <option value="2">Line 2</option>
-        </select>
-      </label>
-      <button id="generateBtn">Generate Rota</button>
+    <h2>Options</h2>
+    <label>
+      Line:
+      <select id="lineSelect">
+        <option value="1">Line 1</option>
+        <option value="2">Line 2</option>
+      </select>
+    </label>
+    <button id="generateBtn">Generate Rota</button>
     </section>
 
     <section class="rota-container">
@@ -39,7 +39,9 @@
 
   <!-- Load order MUST be exactly like this -->
   <script src="script/modules.js"></script>
+  <script src="script/github.js"></script>
   <script src="script/rota.js"></script>
   <script src="script/extra.js"></script>
 </body>
+
 </html>
