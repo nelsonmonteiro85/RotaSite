@@ -7,10 +7,7 @@
     "inspection",
     "puckdrying"
   ],
-  "Ruban": [],
-  "Sivani": [],
-  "Roman": [],
-  "Itaychi": [
+  "Churchill": [
     "peel1",
     "peel2",
     "rinsestation",
@@ -18,7 +15,7 @@
     "inspection",
     "puckdrying"
   ],
-  "Magda": [
+  "Farman": [
     "peel1",
     "peel2",
     "rinsestation",
@@ -34,6 +31,14 @@
     "inspection",
     "puckdrying"
   ],
+  "Itaychi": [
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "puckdrying"
+  ],
   "Justyna": [
     "peel1",
     "peel2",
@@ -42,25 +47,6 @@
     "inspection",
     "puckdrying"
   ],
-  "Marc": [],
-  "Farman": [
-    "peel1",
-    "peel2",
-    "rinsestation",
-    "lenstransfer",
-    "inspection",
-    "puckdrying"
-  ],
-  "Churchill": [
-    "peel1",
-    "peel2",
-    "rinsestation",
-    "lenstransfer",
-    "inspection",
-    "puckdrying"
-  ],
-  "Raz": [],
-  "Mirek": [],
   "Lukasz": [
     "peel1",
     "peel2",
@@ -69,5 +55,20 @@
     "inspection",
     "puckdrying"
   ],
-  "Mo": []
+  "Magda": [
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "puckdrying"
+  ],
+  "Marc": [],
+  "Mirek": [],
+  "Mo": [],
+  "Raz": [],
+  "Roman": [],
+  "Ruban": [],
+  "Sivani": [],
+  "Paulo": []
 }
