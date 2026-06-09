@@ -6,7 +6,8 @@
     "lenstransfer",
     "inspection",
     "puckdrying",
-    "infeedfc"
+    "infeedfc",
+    "qc1"
   ],
   "Churchill": [
     "peel1",
@@ -22,7 +23,9 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc",
+    "qc1"
   ],
   "Harry": [
     "peel1",
