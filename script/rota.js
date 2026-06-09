@@ -3,74 +3,37 @@
 ============================================================ */
 let operators = [];
 let training = {};
+let moduleHistory = {};   // per-module usage per operator
+let operatorHistory = {}; // total usage per operator
 
 /* ============================================================
    LOAD
 ============================================================ */
-function loadDataRota() {
-    const ops = JSON.parse(localStorage.getItem("operators") || "[]");
-    const trn = JSON.parse(localStorage.getItem("training") || "{}");
-
-    operators = ops.map(o => ({
-        name: o.name,
-        line: o.line ?? 1,
-        breakGroup: parseInt(o.breakGroup ?? 1, 10),
-
-        oee: !!o.oee,
-        extra: !!o.extra,
-        puckClean: !!o.puckClean,
-        solution: !!o.solution,
-        rubbish1: !!o.rubbish1,
-        rubbish2: !!o.rubbish2,
-
-        type: (o.type === "agency" || o.type === "permanent") ? o.type : "__",
-
-        inTraining: !!o.inTraining
-    }));
-
-    training = {};
-    for (const [k, arr] of Object.entries(trn)) {
-        training[k] = new Set(arr);
-    }
+async function loadDataRota() {
+    operators = await loadGitHubJSON(GH_OPERATORS_PATH);
+    training = await loadGitHubJSON(GH_TRAINING_PATH);
 }
 
 /* ============================================================
    HELPERS
 ============================================================ */
-function normalize(name) {
-    return name.trim().toLowerCase();
+function normalize(str) {
+    return str.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function getTrainedOpsFor(line, moduleName) {
-    const target = normalize(moduleName).replace(/[^a-z0-9]/g, "");
+function getTrainedOpsFor(moduleName, line) {
+    const key = normalize(moduleName);
 
-    return operators.filter(o => {
-        if (o.inTraining) return false;
-        if (o.line !== line) return false;
-        if (!training[o.name]) return false;
+    return operators.filter(op => {
+        if (op.line !== line) return false;
+        if (op.inTraining) return false;
 
-        const trained = [...training[o.name]].map(x =>
-            normalize(x).replace(/[^a-z0-9]/g, "")
-        );
-
-        return trained.includes(target);
+        const trainedList = training[op.name] || [];
+        return trainedList.includes(key);
     });
 }
 
-
-// NEW: returns how many modules an operator is trained in
-function getTrainingCount(op) {
-    return training[op.name] ? training[op.name].size : 0;
-}
-
-// NEW: checks if operator is trained ONLY in this module
-function isSingleModuleOperator(op, moduleName) {
-    if (!training[op.name]) return false;
-    const trained = [...training[op.name]].map(normalize);
-    return trained.length === 1 && trained[0] === normalize(moduleName);
-}
-
-// NEW: checks Peel conflict
+// Peel conflict: never Peel1 → Peel2 or Peel2 → Peel1 on next break
 function violatesPeelRule(mod, prevPeel1, prevPeel2, opName) {
     if (mod === "Peel 1" && opName === prevPeel2) return true;
     if (mod === "Peel 2" && opName === prevPeel1) return true;
@@ -97,211 +60,161 @@ function getBreakGroups(line) {
     return { firstBreak, secondBreak };
 }
 
-function renderBreakTable(data) {
-    const table = document.getElementById("breakTable");
-    if (!table) return;
+function renderBreakGrid(line) {
+    const data = getBreakGroups(line);
 
-    const rows = table.querySelectorAll("tbody tr");
-
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].querySelectorAll("td");
-        cells[0].textContent = data.firstBreak[i] || "";
-        cells[1].textContent = data.secondBreak[i] || "";
+    let container = document.getElementById("breakGrid");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "breakGrid";
+        container.style.display = "none";
+        document.body.appendChild(container);
     }
+
+    const maxRows = Math.max(data.firstBreak.length, data.secondBreak.length, 1);
+
+    let html = `
+    <table class="rota-table">
+      <tr><th>1st Break</th><th>2nd Break</th></tr>
+  `;
+
+    for (let i = 0; i < maxRows; i++) {
+        html += `
+      <tr>
+        <td>${data.firstBreak[i] || ""}</td>
+        <td>${data.secondBreak[i] || ""}</td>
+      </tr>
+    `;
+    }
+
+    html += `</table>`;
+    container.innerHTML = html;
 }
 
 /* ============================================================
-   ROTA GENERATION (MAIN TABLE ONLY)
+   ROTA GENERATION (RULES 1–3)
 ============================================================ */
 function generateRotaForLine(line) {
-
     const rotaModules = modules.filter(m => normalize(m) !== "training");
     const table = document.getElementById("rotaTable");
     const extrasDiv = document.getElementById("extras");
     const title = document.getElementById("rotaTitle");
 
-    title.textContent = `WHITE SHIFT MTO LINE ${line}`;
+    if (!table || !extrasDiv || !title) return;
+
+    title.textContent = `MTO Rota — Line ${line}`;
     table.innerHTML = "";
     extrasDiv.innerHTML = "";
 
+    // init histories
+    moduleHistory = {};
+    operatorHistory = {};
+    rotaModules.forEach(m => (moduleHistory[m] = {}));
+
     let html = "<tr><th>Break</th>";
-
     rotaModules.forEach(m => {
-        const cls = `rota-col-${m.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-        html += `<th class="${cls}">${m}</th>`;
+        html += `<th>${m}</th>`;
     });
-
     html += "</tr>";
 
     const assignments = [];
-    const operatorHistory = {}; // tracks modules done by each operator
 
     timeSlots.forEach((slot, slotIdx) => {
-
         const row = { break: slot, cells: {} };
-        const used = new Set(); // operators already assigned this break
-        const prevRow = assignments[slotIdx - 1];
+        const used = new Set(); // operators already used in this break
 
+        const prevRow = assignments[slotIdx - 1];
         const prevPeel1 = prevRow ? prevRow.cells["Peel 1"] : null;
         const prevPeel2 = prevRow ? prevRow.cells["Peel 2"] : null;
 
-        // Sort modules by scarcity of trained operators
-        const orderedModules = [...rotaModules].sort((a, b) => {
-            const countA = getTrainedOpsFor(line, a).length;
-            const countB = getTrainedOpsFor(line, b).length;
-            return countA - countB;
-        });
+        rotaModules.forEach(moduleName => {
+            const trained = getTrainedOpsFor(moduleName, line);
 
-        orderedModules.forEach(mod => {
+            if (trained.length === 0) {
+                row.cells[moduleName] = "N/A";
+                return;
+            }
 
-            const prevSame = prevRow ? prevRow.cells[mod] : null;
+            // STEP 1: full rule set
+            let candidates = trained.filter(op => {
+                const name = op.name;
 
-            // /* ============================================================
-            //      TEAM LEADER MANUAL OVERRIDE — SOLUTION → QC1
-            // ============================================================ */
-            // if (mod === "QC1") {
-            //     const manualSolution = operators.find(o =>
-            //         o.solution === true &&
-            //         o.line === line
-            //     );
+                // RULE 2: No repeat in same break
+                if (used.has(name)) return false;
 
-            //     if (manualSolution) {
-            //         row.cells[mod] = manualSolution.name;
-            //         used.add(manualSolution.name);
+                // RULE 5: No Peel1 ↔ Peel2 swap
+                if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
 
-            //         operatorHistory[manualSolution.name] =
-            //             (operatorHistory[manualSolution.name] || 0) + 1;
+                // RULE B: No repeat of same module anywhere in shift
+                const hasDoneModuleBefore = (moduleHistory[moduleName][name] || 0) > 0;
+                const onlyOneTrained = trained.length === 1;
 
-            //         return; // skip all rota logic for this module
-            //     }
-            // }
-
-            // /* ============================================================
-            //     TEAM LEADER MANUAL OVERRIDE — RUBBISH → PEEL 2
-            // ============================================================ */
-            // if (mod === "Peel 2") {
-            //     const manualRubbish = operators.find(o =>
-            //         (o.rubbish1 || o.rubbish2) &&
-            //         o.line === line
-            //     );
-
-            //     if (manualRubbish) {
-            //         row.cells[mod] = manualRubbish.name;
-            //         used.add(manualRubbish.name);
-
-            //         operatorHistory[manualRubbish.name] =
-            //             (operatorHistory[manualRubbish.name] || 0) + 1;
-
-            //         return; // skip all rota logic for this module
-            //     }
-            // }
-
-            /* ============================================================
-               STEP 1 — STRICT TRAINED CANDIDATES
-            ============================================================ */
-            let candidates = getTrainedOpsFor(line, mod).filter(o => {
-
-                if (used.has(o.name)) return false;
-                if (violatesPeelRule(mod, prevPeel1, prevPeel2, o.name)) return false;
-
-                // cannot repeat same module twice in a row
-                if (o.name === prevSame) return false;
+                if (hasDoneModuleBefore && !onlyOneTrained) return false;
 
                 return true;
             });
 
-            /* ============================================================
-               STEP 2 — SHORTAGE MODE (REPEAT TRAINED OPERATOR)
-               (still no duplicates, still no peel conflict)
-            ============================================================ */
+
+            // STEP 2: relax column rule if none (allow repeat in column)
             if (candidates.length === 0) {
-
-                const trained = getTrainedOpsFor(line, mod);
-
-                if (trained.length > 0) {
-
-                    candidates = trained.filter(o => {
-
-                        if (used.has(o.name)) return false;
-                        if (violatesPeelRule(mod, prevPeel1, prevPeel2, o.name)) return false;
-
-                        // allow repeating same module twice in a row ONLY IF:
-                        // operator is trained ONLY in this module AND no other trained exists
-                        if (o.name === prevSame) {
-                            if (isSingleModuleOperator(o, mod) && trained.length === 1) {
-                                return true; // allowed
-                            }
-                            return false; // otherwise blocked
-                        }
-
-                        return true;
-                    });
-                }
+                candidates = trained.filter(op => {
+                    const name = op.name;
+                    if (used.has(name)) return false; // still no repeat in row
+                    if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
+                    return true;
+                });
             }
 
-            /* ============================================================
-               STEP 3 — NO TRAINED EXISTS → USE UNTRAINED
-            ============================================================ */
+            // STEP 3: relax row rule if still none (shortage → allow row repeat)
             if (candidates.length === 0) {
-
-                const trained = getTrainedOpsFor(line, mod);
-
-                if (trained.length === 0) {
-                    candidates = operators.filter(o =>
-                        !o.inTraining &&
-                        o.line === line &&
-                        !used.has(o.name) &&
-                        !violatesPeelRule(mod, prevPeel1, prevPeel2, o.name)
-                    );
-                }
+                candidates = trained.filter(op => {
+                    const name = op.name;
+                    if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
+                    return true;
+                });
             }
 
-            /* ============================================================
-               STEP 4 — FAIRNESS + RANDOMISATION
-            ============================================================ */
-            let chosen = null;
+            // If still none, give up → N/A
+            if (candidates.length === 0) {
+                row.cells[moduleName] = "N/A";
+                return;
+            }
 
-            if (candidates.length > 0) {
+            // Random but fair: shuffle then sort by usage
+            candidates = candidates
+                .sort(() => Math.random() - 0.5)
+                .sort((a, b) => {
+                    const aMod = moduleHistory[moduleName][a.name] || 0;
+                    const bMod = moduleHistory[moduleName][b.name] || 0;
+                    if (aMod !== bMod) return aMod - bMod;
 
-                // random shuffle first
-                candidates = candidates.sort(() => Math.random() - 0.5);
-
-                // fairness: lowest usage count wins
-                candidates.sort((a, b) => {
-                    const aCount = operatorHistory[a.name] || 0;
-                    const bCount = operatorHistory[b.name] || 0;
-                    return aCount - bCount;
+                    const aTot = operatorHistory[a.name] || 0;
+                    const bTot = operatorHistory[b.name] || 0;
+                    return aTot - bTot;
                 });
 
-                chosen = candidates[0];
-            }
+            const chosen = candidates[0];
+            const name = chosen.name;
 
-            /* ============================================================
-               ASSIGN
-            ============================================================ */
-            if (!chosen) {
-                row.cells[mod] = "ERROR"; // should never happen
-            } else {
-                row.cells[mod] = chosen.name;
-                used.add(chosen.name);
+            row.cells[moduleName] = name;
+            used.add(name);
 
-                if (!operatorHistory[chosen.name]) {
-                    operatorHistory[chosen.name] = 0;
-                }
-                operatorHistory[chosen.name] += 1;
-            }
+            if (!moduleHistory[moduleName][name]) moduleHistory[moduleName][name] = 0;
+            moduleHistory[moduleName][name]++;
+
+            if (!operatorHistory[name]) operatorHistory[name] = 0;
+            operatorHistory[name]++;
         });
+
         assignments.push(row);
     });
 
-    /* ============================================================
-       RENDER MAIN TABLE
-    ============================================================ */
+    // render table
     assignments.forEach(row => {
         html += `<tr><td>${row.break}</td>`;
 
         rotaModules.forEach(m => {
-            const cls = `rota-col-${m.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+            const cls = `rota-col-${normalize(m)}`;
             html += `<td class="${cls}">${row.cells[m] || ""}</td>`;
         });
 
@@ -310,30 +223,25 @@ function generateRotaForLine(line) {
 
     table.innerHTML = html;
 
-    /* ============================================================
-       BREAK TABLE
-    ============================================================ */
-    renderBreakTable(getBreakGroups(line));
-
-    /* ============================================================
-       EXTRAS (CALL EXTRA.JS)
-    ============================================================ */
+    renderBreakGrid(line);
     renderExtras(assignments, operators, line, extrasDiv);
 }
 
 /* ============================================================
    INIT
 ============================================================ */
-window.addEventListener("load", () => {
-    loadDataRota();
+window.addEventListener("load", async () => {
+    await loadDataRota();
 
     const lineSelect = document.getElementById("lineSelect");
     const btn = document.getElementById("generateBtn");
 
-    btn.onclick = () => {
-        loadDataRota(); // ← THIS is the missing piece
-        generateRotaForLine(parseInt(lineSelect.value, 10));
-    };
+    if (btn && lineSelect) {
+        btn.onclick = async () => {
+            await loadDataRota();
+            generateRotaForLine(parseInt(lineSelect.value, 10));
+        };
 
-    generateRotaForLine(parseInt(lineSelect.value, 10));
+        generateRotaForLine(parseInt(lineSelect.value, 10));
+    }
 });
