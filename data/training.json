@@ -5,7 +5,8 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc"
   ],
   "Churchill": [
     "peel1",
@@ -66,9 +67,9 @@
   "Marc": [],
   "Mirek": [],
   "Mo": [],
+  "Paulo": [],
   "Raz": [],
   "Roman": [],
   "Ruban": [],
-  "Sivani": [],
-  "Paulo": []
+  "Sivani": []
 }
