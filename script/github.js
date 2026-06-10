@@ -78,3 +78,42 @@ async function saveGitHubJSON(path, jsonData) {
 
     return true;
 }
+
+
+
+// /* ============================================================
+//    REQUIRED CONSTANTS (DO NOT REMOVE)
+// ============================================================ */
+// const GH_OPERATORS_PATH = "data/operators.json";
+// const GH_TRAINING_PATH = "data/training.json";
+
+// /* ============================================================
+//    TEMPORARY LOCAL STORAGE VERSION OF GITHUB FUNCTIONS
+// ============================================================ */
+// async function loadGitHubJSON(path) {
+//     const key = "TEMP_" + path;
+
+//     const raw = localStorage.getItem(key);
+//     if (!raw) return {};
+
+//     try {
+//         return JSON.parse(raw);
+//     } catch (e) {
+//         console.error("TEMP load error:", e);
+//         return {};
+//     }
+// }
+
+// async function saveGitHubJSON(path, data) {
+//     const key = "TEMP_" + path;
+
+//     try {
+//         localStorage.setItem(key, JSON.stringify(data, null, 2));
+//         console.log("TEMP save OK:", key);
+//         return true;
+//     } catch (e) {
+//         console.error("TEMP save error:", e);
+//         return false;
+//     }
+// }
+

@@ -18,8 +18,6 @@ function renderExtras(assignments, operators, line, extrasDiv) {
     .filter(o => (o.rubbish1 || o.rubbish2) && o.line === line)
     .map(o => o.name);
 
-  // If TL assigned → use all assigned
-  // If not → use automatic QC1 / Peel2
   const solutionDisplay = solutionNames.length
     ? solutionNames.join(" / ")
     : (assignments[0]?.cells["QC1"] || "N/A");
@@ -28,7 +26,6 @@ function renderExtras(assignments, operators, line, extrasDiv) {
     ? rubbishNames.join(" / ")
     : (lastRow.cells["Peel 2"] || "N/A");
 
-  // MULTIPLE training operators already supported
   const trainingNames = operators
     .filter(o => o.line === line && o.inTraining)
     .map(o => o.name);
@@ -37,38 +34,42 @@ function renderExtras(assignments, operators, line, extrasDiv) {
     ? trainingNames.join(" / ")
     : "N/A";
 
+  // NEW: generate break grid HTML
+  const breakGridHTML = generateBreakGridHTML(line);
+
   extrasDiv.innerHTML = `
-<div class="extras-grid">
+  <div class="extras-grid">
 
-  <!-- ROW 1 -->
-  <div class="extras-cell">
-    ${document.getElementById("breakGrid")?.outerHTML || "<div>No break grid</div>"}
-  </div>
+    <!-- BREAK GRID spanning both rows -->
+    <div class="extras-cell break-grid-span">
+      ${breakGridHTML}
+    </div>
 
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>Rubbish</th></tr><tr><td>${rubbishDisplay}</td></tr></table>
-  </div>
+    <!-- ROW 1 -->
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>Rubbish</th></tr><tr><td>${rubbishDisplay}</td></tr></table>
+    </div>
 
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>Solution</th></tr><tr><td>${solutionDisplay}</td></tr></table>
-  </div>
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>Solution</th></tr><tr><td>${solutionDisplay}</td></tr></table>
+    </div>
 
-  <!-- ROW 2 -->
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>Training</th></tr><tr><td>${trainingDisplay}</td></tr></table>
-  </div>
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>Training</th></tr><tr><td>${trainingDisplay}</td></tr></table>
+    </div>
 
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>OEE</th></tr><tr><td>${getAllNames("oee")}</td></tr></table>
-  </div>
+    <!-- ROW 2 -->
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>OEE</th></tr><tr><td>${getAllNames("oee")}</td></tr></table>
+    </div>
 
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>Puck Cleaning</th></tr><tr><td>${getAllNames("puckClean")}</td></tr></table>
-  </div>
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>Puck Cleaning</th></tr><tr><td>${getAllNames("puckClean")}</td></tr></table>
+    </div>
 
-  <div class="extras-cell">
-    <table class="rota-table"><tr><th>EXTRA</th></tr><tr><td>${getAllNames("extra")}</td></tr></table>
-  </div>
+    <div class="extras-cell">
+      <table class="rota-table"><tr><th>EXTRA</th></tr><tr><td>${getAllNames("extra")}</td></tr></table>
+    </div>
 
-</div>`;
+  </div>`;
 }

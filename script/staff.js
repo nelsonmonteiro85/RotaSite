@@ -336,7 +336,7 @@ function renderTrainingMatrix() {
 
   const grid = document.createElement("div");
   grid.className = "training-grid";
-  grid.style.gridTemplateColumns = `150px repeat(${trainingModules.length}, 100px)`;
+  grid.style.gridTemplateColumns = `minmax(120px, 150px) repeat(${trainingModules.length}, minmax(60px, 1fr))`;
 
   const headerName = document.createElement("div");
   headerName.className = "training-header-cell";

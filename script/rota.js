@@ -60,42 +60,47 @@ function getBreakGroups(line) {
     return { firstBreak, secondBreak };
 }
 
-function renderBreakGrid(line) {
+function generateBreakGridHTML(line) {
     const data = getBreakGroups(line);
-
-    let container = document.getElementById("breakGrid");
-    if (!container) {
-        container = document.createElement("div");
-        container.id = "breakGrid";
-        container.style.display = "none";
-        document.body.appendChild(container);
-    }
-
     const maxRows = Math.max(data.firstBreak.length, data.secondBreak.length, 1);
 
     let html = `
-    <table class="rota-table">
-      <tr><th>1st Break</th><th>2nd Break</th></tr>
-  `;
+        <table class="rota-table break-table">
+            <tr><th>1st Break</th><th>2nd Break</th></tr>
+    `;
 
     for (let i = 0; i < maxRows; i++) {
         html += `
-      <tr>
-        <td>${data.firstBreak[i] || ""}</td>
-        <td>${data.secondBreak[i] || ""}</td>
-      </tr>
-    `;
+            <tr>
+                <td>${data.firstBreak[i] || ""}</td>
+                <td>${data.secondBreak[i] || ""}</td>
+            </tr>
+        `;
     }
 
     html += `</table>`;
-    container.innerHTML = html;
+    return html;
 }
 
 /* ============================================================
-   ROTA GENERATION (RULES 1–3)
+   ROTA GENERATION - RULES
 ============================================================ */
+function getFlexibility(op, line) {
+    return modules.filter(m => {
+        const key = normalize(m);
+        const trainedList = training[op.name] || [];
+        return trainedList.includes(key);
+    }).length;
+}
+
 function generateRotaForLine(line) {
     const rotaModules = modules.filter(m => normalize(m) !== "training");
+
+    const rotaModulesSorted = [...rotaModules].sort((a, b) => {
+        return getTrainedOpsFor(a, line).length -
+            getTrainedOpsFor(b, line).length;
+    });
+
     const table = document.getElementById("rotaTable");
     const extrasDiv = document.getElementById("extras");
     const title = document.getElementById("rotaTitle");
@@ -126,8 +131,10 @@ function generateRotaForLine(line) {
         const prevRow = assignments[slotIdx - 1];
         const prevPeel1 = prevRow ? prevRow.cells["Peel 1"] : null;
         const prevPeel2 = prevRow ? prevRow.cells["Peel 2"] : null;
+        const previousOperatorForModule = moduleName =>
+            prevRow ? prevRow.cells[moduleName] : null;
 
-        rotaModules.forEach(moduleName => {
+        rotaModulesSorted.forEach(moduleName => {
             const trained = getTrainedOpsFor(moduleName, line);
 
             if (trained.length === 0) {
@@ -135,52 +142,36 @@ function generateRotaForLine(line) {
                 return;
             }
 
-            // STEP 1: full rule set
-            let candidates = trained.filter(op => {
+            // STEP 1 — sort operators by flexibility (fewest skills first)
+            const trainedSorted = [...trained].sort((a, b) => {
+                const aSkills = getFlexibility(a, line);
+                const bSkills = getFlexibility(b, line);
+                return aSkills - bSkills;
+            });
+
+            // STEP 2 — apply rules
+            let candidates = trainedSorted.filter(op => {
                 const name = op.name;
 
-                // RULE 2: No repeat in same break
+                // RULE 1: Never do two modules in the same break
                 if (used.has(name)) return false;
 
-                // RULE 5: No Peel1 ↔ Peel2 swap
+                // RULE 2: Never do the same module in consecutive breaks
+                const prevOp = previousOperatorForModule(moduleName);
+                if (prevOp === name) return false;
+
+                // RULE 3: Peel1 ↔ Peel2 restriction
                 if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
-
-                // RULE B: No repeat of same module anywhere in shift
-                const hasDoneModuleBefore = (moduleHistory[moduleName][name] || 0) > 0;
-                const onlyOneTrained = trained.length === 1;
-
-                if (hasDoneModuleBefore && !onlyOneTrained) return false;
 
                 return true;
             });
 
-
-            // STEP 2: relax column rule if none (allow repeat in column)
-            if (candidates.length === 0) {
-                candidates = trained.filter(op => {
-                    const name = op.name;
-                    if (used.has(name)) return false; // still no repeat in row
-                    if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
-                    return true;
-                });
-            }
-
-            // STEP 3: relax row rule if still none (shortage → allow row repeat)
-            if (candidates.length === 0) {
-                candidates = trained.filter(op => {
-                    const name = op.name;
-                    if (violatesPeelRule(moduleName, prevPeel1, prevPeel2, name)) return false;
-                    return true;
-                });
-            }
-
-            // If still none, give up → N/A
             if (candidates.length === 0) {
                 row.cells[moduleName] = "N/A";
                 return;
             }
 
-            // Random but fair: shuffle then sort by usage
+            // Fairness
             candidates = candidates
                 .sort(() => Math.random() - 0.5)
                 .sort((a, b) => {
@@ -190,7 +181,9 @@ function generateRotaForLine(line) {
 
                     const aTot = operatorHistory[a.name] || 0;
                     const bTot = operatorHistory[b.name] || 0;
-                    return aTot - bTot;
+                    if (aTot !== bTot) return aTot - bTot;
+
+                    return Math.random() - 0.5;
                 });
 
             const chosen = candidates[0];
@@ -205,6 +198,7 @@ function generateRotaForLine(line) {
             if (!operatorHistory[name]) operatorHistory[name] = 0;
             operatorHistory[name]++;
         });
+
 
         assignments.push(row);
     });
@@ -223,7 +217,6 @@ function generateRotaForLine(line) {
 
     table.innerHTML = html;
 
-    renderBreakGrid(line);
     renderExtras(assignments, operators, line, extrasDiv);
 }
 
