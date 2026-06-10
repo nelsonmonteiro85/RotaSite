@@ -76,9 +76,15 @@
     "puckdrying",
     "infeedfc"
   ],
-  "Marc": [],
-  "Mirek": [],
-  "Mo": [],
+  "Marc": [
+    "infeedfc"
+  ],
+  "Mirek": [
+    "infeedfc"
+  ],
+  "Mo": [
+    "infeedfc"
+  ],
   "Paulo": [],
   "Raz": [],
   "Roman": [],
