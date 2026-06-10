@@ -15,7 +15,8 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc"
   ],
   "Farman": [
     "peel1",
@@ -33,7 +34,8 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc"
   ],
   "Itaychi": [
     "peel1",
@@ -41,7 +43,9 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc",
+    "qc1"
   ],
   "Justyna": [
     "peel1",
@@ -49,7 +53,9 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc",
+    "qc1"
   ],
   "Lukasz": [
     "peel1",
@@ -57,7 +63,9 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc",
+    "qc1"
   ],
   "Magda": [
     "peel1",
@@ -65,7 +73,8 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc"
   ],
   "Marc": [],
   "Mirek": [],
