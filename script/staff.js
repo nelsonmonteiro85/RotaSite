@@ -67,21 +67,23 @@ function getTrainingFromUI() {
   return result;
 }
 
-async function saveToGitHub() {
-    const operatorsToSave = getOperatorsFromUI();
-    const trainingToSave = getTrainingFromUI();
+function saveToGitHub() {
+  const operatorsToSave = getOperatorsFromUI();
+  const trainingToSave = getTrainingFromUI();
 
-    const ok1 = await saveGitHubJSON(GH_OPERATORS_PATH, operatorsToSave);
-    const ok2 = await saveGitHubJSON(GH_TRAINING_PATH, trainingToSave);
+  // ⭐ Instant local save + background GitHub sync
+  saveHybrid(GH_OPERATORS_PATH, operatorsToSave);
+  saveHybrid(GH_TRAINING_PATH, trainingToSave);
 
-    if (ok1 && ok2) {
-        // ⭐ Update global variables so UI + memory match what was saved
-        operators = operatorsToSave;
-        training = trainingToSave;
+  // ⭐ Update global variables so UI matches saved data
+  operators = operatorsToSave;
+  training = trainingToSave;
 
-        dirty = false;
-        alert("Saved!");
-    }
+  // ⭐ Reset dirty flag so the browser stops warning
+  dirty = false;
+  window.onbeforeunload = null;
+
+  alert("Saved!");
 }
 
 /* ============================================================

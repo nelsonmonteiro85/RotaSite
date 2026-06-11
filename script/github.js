@@ -14,7 +14,6 @@ const GH_TRAINING_PATH = "data/training.json";
 function getGitHubToken() {
     let token = localStorage.getItem("github_token");
 
-    // If no token stored, ask once
     if (!token) {
         token = prompt("Enter your GitHub Personal Access Token:");
 
@@ -35,16 +34,21 @@ function getGitHubToken() {
 async function loadGitHubJSON(path) {
     const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/${GH_BRANCH}/${path}`;
     const res = await fetch(url);
+
+    if (!res.ok) {
+        console.error("GitHub load error:", res.status, res.statusText);
+        return {};
+    }
+
     return await res.json();
 }
 
 // ===============================
-// SAVE FILE TO GITHUB
+// SAVE FILE TO GITHUB (REAL)
 // ===============================
 async function saveGitHubJSON(path, jsonData) {
-    let token = getGitHubToken();
-    if (!token) token = askForGitHubToken();
-    if (!token) return alert("Cannot save without a GitHub token.");
+    const token = getGitHubToken();
+    if (!token) return false;
 
     const apiURL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${path}`;
 
@@ -52,12 +56,14 @@ async function saveGitHubJSON(path, jsonData) {
     const current = await fetch(apiURL).then(r => r.json());
     const sha = current.sha;
 
+    // Encode file content
+    const encodedContent = btoa(
+        unescape(encodeURIComponent(JSON.stringify(jsonData, null, 2)))
+    );
+
     const body = {
         message: `Update ${path}`,
-        content: btoa(encodeURIComponent(JSON.stringify(jsonData, null, 2)).replace(/%([0-9A-F]{2})/g, (_, p1) =>
-            String.fromCharCode('0x' + p1)
-        )),
-
+        content: encodedContent,
         sha: sha,
         branch: GH_BRANCH
     };
@@ -72,48 +78,84 @@ async function saveGitHubJSON(path, jsonData) {
     });
 
     if (!res.ok) {
-        alert("Failed to save to GitHub.");
+        console.error("GitHub save error:", await res.text());
         return false;
     }
 
     return true;
 }
 
+// ============================================================
+// HYBRID MODE: LOCAL INSTANT SAVE + BACKGROUND GITHUB SYNC
+// ============================================================
 
+// Save instantly to localStorage (non-blocking)
+function saveLocalJSON(path, data) {
+    try {
+        localStorage.setItem("LOCAL_" + path, JSON.stringify(data, null, 2));
+        console.log("Local save OK:", path);
+        return true;
+    } catch (e) {
+        console.error("Local save error:", e);
+        return false;
+    }
+}
 
-// /* ============================================================
-//    REQUIRED CONSTANTS (DO NOT REMOVE)
-// ============================================================ */
-// const GH_OPERATORS_PATH = "data/operators.json";
-// const GH_TRAINING_PATH = "data/training.json";
+// Load from localStorage first (fast), fallback to GitHub
+async function loadHybridJSON(path) {
+    const local = localStorage.getItem("LOCAL_" + path);
 
-// /* ============================================================
-//    TEMPORARY LOCAL STORAGE VERSION OF GITHUB FUNCTIONS
-// ============================================================ */
-// async function loadGitHubJSON(path) {
-//     const key = "TEMP_" + path;
+    if (local) {
+        try {
+            return JSON.parse(local);
+        } catch (e) {
+            console.error("Local load error:", e);
+        }
+    }
 
-//     const raw = localStorage.getItem(key);
-//     if (!raw) return {};
+    // If no local version, load from GitHub
+    const remote = await loadGitHubJSON(path);
+    saveLocalJSON(path, remote); // cache locally
+    return remote;
+}
 
-//     try {
-//         return JSON.parse(raw);
-//     } catch (e) {
-//         console.error("TEMP load error:", e);
-//         return {};
-//     }
-// }
+// Queue for background GitHub sync
+let githubSaveQueue = {};
+let githubSaveTimer = null;
 
-// async function saveGitHubJSON(path, data) {
-//     const key = "TEMP_" + path;
+function queueGitHubSave(path, data) {
+    githubSaveQueue[path] = data;
 
-//     try {
-//         localStorage.setItem(key, JSON.stringify(data, null, 2));
-//         console.log("TEMP save OK:", key);
-//         return true;
-//     } catch (e) {
-//         console.error("TEMP save error:", e);
-//         return false;
-//     }
-// }
+    if (!githubSaveTimer) {
+        githubSaveTimer = setTimeout(processGitHubQueue, 1500);
+    }
+}
 
+async function processGitHubQueue() {
+    const queue = { ...githubSaveQueue };
+    githubSaveQueue = {};
+    githubSaveTimer = null;
+
+    for (const path in queue) {
+        const data = queue[path];
+        console.log("Syncing to GitHub:", path);
+
+        const ok = await saveGitHubJSON(path, data);
+
+        if (!ok) {
+            console.warn("GitHub save failed, retrying:", path);
+            queueGitHubSave(path, data); // retry later
+        }
+    }
+}
+
+// ============================================================
+// PUBLIC HYBRID SAVE FUNCTION
+// ============================================================
+function saveHybrid(path, data) {
+    // 1. Save instantly (UI stays fast)
+    saveLocalJSON(path, data);
+
+    // 2. Queue GitHub save in background
+    queueGitHubSave(path, data);
+}
