@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Andrea",
+    "birthday": "20/06/1998",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "__",
+    "inTraining": false
+  },
+  {
+    "name": "Nelson Monteiro",
+    "birthday": "04/07/1985",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "__",
+    "inTraining": false
+  }
+]
