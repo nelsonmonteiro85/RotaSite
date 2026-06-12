@@ -12,15 +12,17 @@ const GH_TRAINING_PATH = "data/training.json";
 // TOKEN HANDLING
 // ===============================
 function getGitHubToken() {
-    let token = localStorage.getItem("github_token");
+    let token = localStorage.getItem("github_bot_token");
 
     if (!token) {
-        token = prompt("Enter your GitHub Personal Access Token:");
+        token = prompt(
+            "Enter the BOT GitHub token (MTO-Production). You only need to do this once on this device."
+        );
 
         if (token && token.trim() !== "") {
-            localStorage.setItem("github_token", token);
+            localStorage.setItem("github_bot_token", token.trim());
         } else {
-            alert("A GitHub token is required to save data.");
+            alert("A GitHub bot token is required to save data.");
             return null;
         }
     }
@@ -92,8 +94,9 @@ async function saveGitHubJSON(path, jsonData) {
 // Save instantly to localStorage (non-blocking)
 function saveLocalJSON(path, data) {
     try {
-        localStorage.setItem("LOCAL_" + path, JSON.stringify(data, null, 2));
-        console.log("Local save OK:", path);
+        const safeKey = "LOCAL_" + path.replace(/\//g, "__");
+        localStorage.setItem(safeKey, JSON.stringify(data, null, 2));
+        console.log("Local save OK:", safeKey);
         return true;
     } catch (e) {
         console.error("Local save error:", e);
@@ -103,7 +106,8 @@ function saveLocalJSON(path, data) {
 
 // Load from localStorage first (fast), fallback to GitHub
 async function loadHybridJSON(path) {
-    const local = localStorage.getItem("LOCAL_" + path);
+    const safeKey = "LOCAL_" + path.replace(/\//g, "__");
+    const local = localStorage.getItem(safeKey);
 
     if (local) {
         try {
@@ -113,9 +117,8 @@ async function loadHybridJSON(path) {
         }
     }
 
-    // If no local version, load from GitHub
     const remote = await loadGitHubJSON(path);
-    saveLocalJSON(path, remote); // cache locally
+    saveLocalJSON(path, remote);
     return remote;
 }
 

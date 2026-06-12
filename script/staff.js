@@ -6,7 +6,34 @@ let training = {}; // name -> array of module names
 let dirty = false;
 
 function markDirty() {
-  dirty = true;
+  if (!dirty) {
+    dirty = true;
+    document.getElementById("unsavedBanner").classList.remove("hidden");
+    document.getElementById("saveToGitHubBtn").disabled = false;
+  }
+}
+
+function showToast() {
+  const t = document.getElementById("saveToast");
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2000);
+}
+
+function saveToGitHub() {
+  const operatorsToSave = getOperatorsFromUI();
+  const trainingToSave = getTrainingFromUI();
+
+  saveHybrid(GH_OPERATORS_PATH, operatorsToSave);
+  saveHybrid(GH_TRAINING_PATH, trainingToSave);
+
+  operators = operatorsToSave;
+  training = trainingToSave;
+
+  dirty = false;
+  document.getElementById("unsavedBanner").classList.add("hidden");
+  document.getElementById("saveBtn").disabled = true;
+
+  showToast();
 }
 
 window.addEventListener("beforeunload", (e) => {
@@ -26,33 +53,27 @@ function getOperatorsFromUI() {
 
   list.querySelectorAll("li").forEach(li => {
     const name = li.querySelector("div").textContent.trim();
-    const selects = li.querySelectorAll("select");
+    const birthday = li.querySelector(".birthday-input")?.value.trim() || "";
 
-    const [
-      lineSel,
-      breakSel,
-      oeeSel,
-      extraSel,
-      puckSel,
-      solSel,
-      rub1Sel,
-      rub2Sel,
-      typeSel,
-      trainingSel
-    ] = selects;
+    // Helper to get a select value by class
+    const get = cls => li.querySelector("." + cls)?.value;
 
     newOps.push({
       name,
-      line: lineSel.value === "__" ? "__" : parseInt(lineSel.value, 10),
-      breakGroup: breakSel.value === "__" ? "__" : parseInt(breakSel.value, 10),
-      oee: oeeSel.value === "yes",
-      extra: extraSel.value === "yes",
-      puckClean: puckSel.value === "yes",
-      solution: solSel.value === "yes",
-      rubbish1: rub1Sel.value === "yes",
-      rubbish2: rub2Sel.value === "yes",
-      type: typeSel.value,
-      inTraining: trainingSel.value === "yes"
+      birthday,
+
+      line: get("line-select") === "__" ? "__" : parseInt(get("line-select"), 10),
+      breakGroup: get("break-select") === "__" ? "__" : parseInt(get("break-select"), 10),
+
+      oee: get("oee-select") === "yes",
+      extra: get("extra-select") === "yes",
+      puckClean: get("puckclean-select") === "yes",
+      solution: get("solution-select") === "yes",
+      rubbish1: get("rubbishl1-select") === "yes",
+      rubbish2: get("rubbishl2-select") === "yes",
+
+      type: get("type-select"),
+      inTraining: get("training-select") === "yes"
     });
   });
 
@@ -90,8 +111,10 @@ function saveToGitHub() {
    LOAD FROM GITHUB
 ============================================================ */
 async function loadDataStaff() {
-  operators = await loadGitHubJSON(GH_OPERATORS_PATH);
-  training = await loadGitHubJSON(GH_TRAINING_PATH);
+  console.log("loadDataStaff() executed");
+
+  operators = await loadHybridJSON(GH_OPERATORS_PATH);
+  training = await loadHybridJSON(GH_TRAINING_PATH);
 
   renderOperatorList();
   renderTrainingMatrix();
@@ -100,13 +123,14 @@ async function loadDataStaff() {
 /* ============================================================
    OPERATOR LIST UI
 ============================================================ */
-function addOperator(name) {
+function addOperator(name, birthday = "") {
   name = name.trim();
   if (!name) return;
   if (operators.some(o => o.name.toLowerCase() === name.toLowerCase())) return;
 
   operators.push({
     name,
+    birthday: birthday || "",
     line: "__",
     breakGroup: "__",
     oee: false,
@@ -163,6 +187,7 @@ function renderOperatorList() {
         wrapper.appendChild(span);
 
         const sel = document.createElement("select");
+        sel.classList.add(labelText.toLowerCase().replace(/[^a-z]/g, "") + "-select");
         options.forEach(opt => {
           const oEl = document.createElement("option");
           oEl.value = opt.value;
@@ -306,6 +331,20 @@ function renderOperatorList() {
       row.appendChild(delBtn);
 
       li.appendChild(title);
+      // ⭐ BIRTHDAY INPUT FIELD (DD/MM/YYYY)
+      const birthdayInput = document.createElement("input");
+      birthdayInput.type = "text";
+      birthdayInput.placeholder = "DD/MM/YYYY";
+      birthdayInput.value = op.birthday || "";
+      birthdayInput.className = "birthday-input";
+
+      birthdayInput.onchange = () => {
+        op.birthday = birthdayInput.value.trim();
+        markDirty();
+      };
+
+      li.appendChild(birthdayInput);
+
       li.appendChild(row);
       list.appendChild(li);
     });
@@ -394,22 +433,51 @@ function renderTrainingMatrix() {
 /* ============================================================
    INIT
 ============================================================ */
-window.addEventListener("load", () => {
-  loadDataStaff();
+window.addEventListener("DOMContentLoaded", () => {
+  if (!window._staffDataLoaded) {
+    loadDataStaff();
+    window._staffDataLoaded = true;
+  }
 
   const addBtn = document.getElementById("addOpBtn");
   const input = document.getElementById("opInput");
 
   addBtn.onclick = () => {
-    addOperator(input.value);
+    const name = input.value.trim();
+    const birthday = document.getElementById("opBirthday").value.trim();
+
+    addOperator(name, birthday);
+
     input.value = "";
+    document.getElementById("opBirthday").value = "";
     input.focus();
   };
 
   input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
-      addOperator(input.value);
+      const name = input.value.trim();
+      const birthday = document.getElementById("opBirthday").value.trim();
+
+      addOperator(name, birthday);
+
       input.value = "";
+      document.getElementById("opBirthday").value = "";
     }
   });
+
+  function protectNavigation(el) {
+    el.addEventListener("click", (e) => {
+      if (dirty) {
+        const ok = confirm("You have unsaved changes. Leave without saving?");
+        if (!ok) {
+          e.preventDefault();
+        }
+      }
+    });
+  }
+
+  // Protect all header navigation buttons EXCEPT Save
+  document.querySelectorAll("header nav button:not(#saveToGitHubBtn)")
+    .forEach(protectNavigation);
+
 });

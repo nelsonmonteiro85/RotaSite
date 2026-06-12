@@ -1,36 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Staff Management</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+
+  <div id="unsavedBanner" class="unsaved-banner hidden">
+    ⚠ You have unsaved changes
+  </div>
+
+  <div id="saveToast" class="save-toast hidden">
+    Saved!
+  </div>
+
   <header>
     <h1>Staff Management</h1>
     <nav>
       <button onclick="location.href='index.html'">Home</button>
       <button onclick="location.href='rota.html'">Rota Planner</button>
-      <button id="saveToGitHubBtn" class="btn-save" onclick="saveToGitHub()">Save</button>
+      <button id="saveToGitHubBtn" class="btn-save" onclick="saveToGitHub()" disabled>Save</button>
     </nav>
   </header>
 
   <main class="page-container">
 
     <section class="panel">
+      <h2>Training Matrix</h2>
+      <div id="trainingMatrix"></div>
+    </section>
+
+    <section class="panel">
       <h2>Operators</h2>
 
       <div class="input-row">
         <input id="opInput" type="text" placeholder="Add operator...">
+        <input id="opBirthday" type="text" placeholder="DD/MM/YYYY">
         <button id="addOpBtn">Add</button>
       </div>
 
       <ul id="opList" class="list"></ul>
-    </section>
-
-    <section class="panel">
-      <h2>Training Matrix</h2>
-      <div id="trainingMatrix"></div>
     </section>
 
   </main>
@@ -39,4 +51,5 @@
   <script src="script/staff.js"></script>
   <script src="script/github.js"></script>
 </body>
+
 </html>
