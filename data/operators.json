@@ -2,15 +2,15 @@
   {
     "name": "Churchill",
     "birthday": "12/05",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 1,
+    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
-    "type": "__",
+    "type": "agency",
     "inTraining": false
   },
   {
