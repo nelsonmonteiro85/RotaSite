@@ -58,7 +58,7 @@
   {
     "name": "Itaychi",
     "birthday": "23/07/1974",
-    "line": "__",
+    "line": 2,
     "breakGroup": "__",
     "oee": false,
     "extra": false,
@@ -240,8 +240,8 @@
   {
     "name": "Sivani",
     "birthday": "17/06",
-    "line": 2,
-    "breakGroup": 2,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
