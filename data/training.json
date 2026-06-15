@@ -37,7 +37,16 @@
     "qc1",
     "puckdrying"
   ],
-  "Itaychi": [],
+  "Itaychi": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
   "Judit": [
     "infeedfc",
     "peel1",
@@ -145,12 +154,5 @@
     "inspection",
     "puckdrying"
   ],
-  "Sivani": [
-    "puckdrying",
-    "infeedfc",
-    "peel1",
-    "peel2",
-    "rinsestation",
-    "inspection"
-  ]
+  "Sivani": []
 }
