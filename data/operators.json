@@ -66,7 +66,7 @@
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
-    "type": "__",
+    "type": "permanent",
     "inTraining": false
   },
   {
@@ -109,6 +109,20 @@
     "rubbish1": false,
     "rubbish2": false,
     "type": "permanent",
+    "inTraining": false
+  },
+  {
+    "name": "Magda",
+    "birthday": "20/06/1993",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "agency",
     "inTraining": false
   },
   {
@@ -212,15 +226,15 @@
   {
     "name": "Ruban",
     "birthday": "01/11",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
-    "type": "__",
+    "type": "agency",
     "inTraining": false
   },
   {
