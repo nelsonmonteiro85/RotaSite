@@ -59,7 +59,7 @@
     "name": "Itaychi",
     "birthday": "23/07/1974",
     "line": 2,
-    "breakGroup": "__",
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
