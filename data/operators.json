@@ -31,7 +31,7 @@
     "name": "Farman",
     "birthday": "10/10",
     "line": 1,
-    "breakGroup": "__",
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
