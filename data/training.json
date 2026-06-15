@@ -68,6 +68,7 @@
     "qc1",
     "puckdrying"
   ],
+  "Magda": [],
   "Marc": [
     "infeedfc",
     "peel1",
@@ -135,7 +136,15 @@
     "inspection",
     "qc1"
   ],
-  "Ruban": [],
+  "Ruban": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "puckdrying"
+  ],
   "Sivani": [
     "puckdrying",
     "infeedfc",
@@ -143,6 +152,5 @@
     "peel2",
     "rinsestation",
     "inspection"
-  ],
-  "Magda": []
+  ]
 }
