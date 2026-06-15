@@ -227,7 +227,7 @@
     "name": "Ruban",
     "birthday": "01/11",
     "line": 2,
-    "breakGroup": 2,
+    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
