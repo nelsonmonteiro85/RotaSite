@@ -7,18 +7,139 @@
     "lenstransfer",
     "puckdrying"
   ],
-  "Dipesh": [],
-  "Farman": [],
-  "Harry": [],
-  "Judit": [],
-  "Justyna": [],
-  "Lukasz": [],
-  "Marc": [],
-  "Mirek": [],
-  "Mo": [],
-  "Olga": [],
-  "Paulo": [],
-  "Raz": [],
-  "Roman": [],
-  "Sivani": []
+  "Dipesh": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Farman": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Harry": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Judit": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Justyna": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Lukasz": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Marc": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Mirek": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "puckdrying"
+  ],
+  "Mo": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Olga": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Paulo": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "puckdrying"
+  ],
+  "Raz": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "puckdrying",
+    "inspection"
+  ],
+  "Roman": [
+    "puckdrying",
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1"
+  ],
+  "Sivani": [
+    "puckdrying",
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "inspection"
+  ]
 }
