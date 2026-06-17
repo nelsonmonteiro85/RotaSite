@@ -160,7 +160,7 @@
     "breakGroup": 1,
     "oee": false,
     "extra": false,
-    "puckClean": false,
+    "puckClean": true,
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
