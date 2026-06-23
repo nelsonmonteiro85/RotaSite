@@ -10,7 +10,7 @@
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
-    "type": "__",
+    "type": "permanent",
     "inTraining": false
   },
   {
@@ -198,8 +198,8 @@
   {
     "name": "Paulo",
     "birthday": "08/05",
-    "line": 1,
-    "breakGroup": 1,
+    "line": 2,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
