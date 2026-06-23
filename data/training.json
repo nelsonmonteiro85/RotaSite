@@ -1,4 +1,10 @@
 {
+  "Alex": [
+    "infeedfc",
+    "peel1",
+    "rinsestation",
+    "lenstransfer"
+  ],
   "Churchill": [
     "infeedfc",
     "peel1",
@@ -144,6 +150,5 @@
     "inspection",
     "puckdrying"
   ],
-  "Sivani": [],
-  "Alex": []
+  "Sivani": []
 }
