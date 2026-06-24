@@ -1,5 +1,19 @@
 [
   {
+    "name": "Aleks",
+    "birthday": "",
+    "line": 2,
+    "breakGroup": 1,
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "__",
+    "inTraining": false
+  },
+  {
     "name": "Alex",
     "birthday": "",
     "line": 1,
@@ -58,8 +72,8 @@
   {
     "name": "Harry",
     "birthday": "14/07/2005",
-    "line": 2,
-    "breakGroup": 1,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -133,7 +147,7 @@
     "oee": false,
     "extra": false,
     "puckClean": false,
-    "solution": false,
+    "solution": true,
     "rubbish1": false,
     "rubbish2": false,
     "type": "agency",
@@ -207,6 +221,20 @@
     "rubbish1": false,
     "rubbish2": false,
     "type": "agency",
+    "inTraining": false
+  },
+  {
+    "name": "Piotrek",
+    "birthday": "",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "__",
     "inTraining": false
   },
   {
