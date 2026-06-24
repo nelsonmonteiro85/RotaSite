@@ -1,9 +1,17 @@
 {
-  "Alex": [
+  "Aleks": [
     "infeedfc",
     "peel1",
+    "peel2",
     "rinsestation",
-    "lenstransfer"
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Alex": [
+    "infeedfc",
+    "peel1"
   ],
   "Churchill": [
     "infeedfc",
@@ -34,14 +42,14 @@
     "puckdrying"
   ],
   "Harry": [
-    "infeedfc",
     "peel1",
     "peel2",
     "rinsestation",
     "lenstransfer",
     "inspection",
     "qc1",
-    "puckdrying"
+    "puckdrying",
+    "infeedfc"
   ],
   "Itaychi": [
     "infeedfc",
@@ -53,7 +61,16 @@
     "qc1",
     "puckdrying"
   ],
-  "Judit": [],
+  "Judit": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
   "Justyna": [
     "infeedfc",
     "peel1",
@@ -130,6 +147,16 @@
     "rinsestation",
     "lenstransfer",
     "inspection",
+    "puckdrying"
+  ],
+  "Piotrek": [
+    "peel1",
+    "infeedfc",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
     "puckdrying"
   ],
   "Raz": [
