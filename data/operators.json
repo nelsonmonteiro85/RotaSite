@@ -254,8 +254,8 @@
   {
     "name": "Roman",
     "birthday": "16/03",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
