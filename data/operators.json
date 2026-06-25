@@ -2,8 +2,8 @@
   {
     "name": "Aleks",
     "birthday": "",
-    "line": 2,
-    "breakGroup": 1,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -16,7 +16,7 @@
   {
     "name": "Alex",
     "birthday": "",
-    "line": 1,
+    "line": 2,
     "breakGroup": 1,
     "oee": false,
     "extra": false,
@@ -198,8 +198,8 @@
   {
     "name": "Olga",
     "birthday": "28/09",
-    "line": 2,
-    "breakGroup": 2,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -226,8 +226,8 @@
   {
     "name": "Piotrek",
     "birthday": "",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -254,7 +254,7 @@
   {
     "name": "Roman",
     "birthday": "16/03",
-    "line": 2,
+    "line": 1,
     "breakGroup": 1,
     "oee": false,
     "extra": false,
