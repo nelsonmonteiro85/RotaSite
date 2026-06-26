@@ -170,7 +170,7 @@
   {
     "name": "Mirek",
     "birthday": "29/04",
-    "line": 1,
+    "line": 2,
     "breakGroup": 1,
     "oee": false,
     "extra": false,
@@ -185,7 +185,7 @@
     "name": "Mo",
     "birthday": "07/07",
     "line": 1,
-    "breakGroup": 2,
+    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
