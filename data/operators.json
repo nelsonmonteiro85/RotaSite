@@ -90,7 +90,7 @@
     "breakGroup": 2,
     "oee": false,
     "extra": false,
-    "puckClean": true,
+    "puckClean": false,
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
