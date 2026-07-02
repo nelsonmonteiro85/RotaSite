@@ -16,7 +16,7 @@
   {
     "name": "Alex",
     "birthday": "",
-    "line": "__",
+    "line": 1,
     "breakGroup": "__",
     "oee": false,
     "extra": false,
@@ -30,8 +30,8 @@
   {
     "name": "Churchill",
     "birthday": "12/05",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 1,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -254,8 +254,8 @@
   {
     "name": "Roman",
     "birthday": "16/03",
-    "line": 1,
-    "breakGroup": 2,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
