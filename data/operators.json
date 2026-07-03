@@ -184,8 +184,8 @@
   {
     "name": "Mo",
     "birthday": "07/07",
-    "line": 1,
-    "breakGroup": 1,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
