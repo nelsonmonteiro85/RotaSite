@@ -13,7 +13,16 @@
     "infeedfc",
     "peel1"
   ],
-  "Andrea": [],
+  "Andrea": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
   "Churchill": [
     "infeedfc",
     "peel1",
