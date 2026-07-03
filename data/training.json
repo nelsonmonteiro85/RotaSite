@@ -13,22 +13,13 @@
     "infeedfc",
     "peel1"
   ],
+  "Andrea": [],
   "Churchill": [
     "infeedfc",
     "peel1",
     "peel2",
     "rinsestation",
     "lenstransfer",
-    "puckdrying"
-  ],
-  "Dipesh": [
-    "infeedfc",
-    "peel1",
-    "peel2",
-    "rinsestation",
-    "lenstransfer",
-    "inspection",
-    "qc1",
     "puckdrying"
   ],
   "Farman": [
