@@ -58,8 +58,8 @@
   {
     "name": "Farman",
     "birthday": "10/10",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -254,8 +254,8 @@
   {
     "name": "Roman",
     "birthday": "16/03",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 1,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -282,7 +282,7 @@
   {
     "name": "Sivani",
     "birthday": "17/06",
-    "line": 2,
+    "line": 1,
     "breakGroup": 2,
     "oee": false,
     "extra": false,
