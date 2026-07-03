@@ -156,8 +156,8 @@
   {
     "name": "Marc",
     "birthday": "07/11",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -212,8 +212,8 @@
   {
     "name": "Paulo",
     "birthday": "08/05",
-    "line": 2,
-    "breakGroup": 1,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -282,8 +282,8 @@
   {
     "name": "Sivani",
     "birthday": "17/06",
-    "line": 1,
-    "breakGroup": 2,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
