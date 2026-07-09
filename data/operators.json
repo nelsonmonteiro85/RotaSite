@@ -114,8 +114,8 @@
   {
     "name": "Justyna",
     "birthday": "15/08/1982",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 2,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -282,8 +282,8 @@
   {
     "name": "Sivani",
     "birthday": "17/06",
-    "line": 2,
-    "breakGroup": 2,
+    "line": 1,
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
