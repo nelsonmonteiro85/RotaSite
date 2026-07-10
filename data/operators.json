@@ -2,8 +2,8 @@
   {
     "name": "Aleks",
     "birthday": "",
-    "line": 1,
-    "breakGroup": 2,
+    "line": "__",
+    "breakGroup": "__",
     "oee": false,
     "extra": false,
     "puckClean": false,
@@ -150,7 +150,7 @@
     "solution": false,
     "rubbish1": false,
     "rubbish2": false,
-    "type": "__",
+    "type": "permanent",
     "inTraining": false
   },
   {
@@ -240,8 +240,8 @@
   {
     "name": "Piotrek",
     "birthday": "",
-    "line": "__",
-    "breakGroup": "__",
+    "line": 1,
+    "breakGroup": 2,
     "oee": false,
     "extra": false,
     "puckClean": false,
