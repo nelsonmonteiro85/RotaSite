@@ -140,6 +140,20 @@
     "inTraining": false
   },
   {
+    "name": "Luke",
+    "birthday": "",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "__",
+    "inTraining": false
+  },
+  {
     "name": "Magda",
     "birthday": "20/06/1993",
     "line": "__",
