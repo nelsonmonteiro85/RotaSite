@@ -13,7 +13,8 @@
     "infeedfc",
     "peel1",
     "rinsestation",
-    "lenstransfer"
+    "lenstransfer",
+    "puckdrying"
   ],
   "Andrea": [
     "infeedfc",
@@ -84,6 +85,16 @@
     "puckdrying"
   ],
   "Lukasz": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
+    "inspection",
+    "qc1",
+    "puckdrying"
+  ],
+  "Luke": [
     "infeedfc",
     "peel1",
     "peel2",
@@ -196,6 +207,5 @@
     "lenstransfer",
     "inspection",
     "puckdrying"
-  ],
-  "Luke": []
+  ]
 }
