@@ -84,6 +84,34 @@
     "inTraining": false
   },
   {
+    "name": "Iwona",
+    "birthday": "",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "agency",
+    "inTraining": false
+  },
+  {
+    "name": "Joyce",
+    "birthday": "",
+    "line": "__",
+    "breakGroup": "__",
+    "oee": false,
+    "extra": false,
+    "puckClean": false,
+    "solution": false,
+    "rubbish1": false,
+    "rubbish2": false,
+    "type": "agency",
+    "inTraining": false
+  },
+  {
     "name": "Judit",
     "birthday": "03/10",
     "line": 2,
@@ -151,20 +179,6 @@
     "rubbish1": false,
     "rubbish2": false,
     "type": "agency",
-    "inTraining": false
-  },
-  {
-    "name": "Marc",
-    "birthday": "07/11",
-    "line": 2,
-    "breakGroup": 1,
-    "oee": false,
-    "extra": false,
-    "puckClean": false,
-    "solution": false,
-    "rubbish1": false,
-    "rubbish2": false,
-    "type": "permanent",
     "inTraining": false
   },
   {
@@ -270,20 +284,6 @@
     "birthday": "01/11",
     "line": 2,
     "breakGroup": 2,
-    "oee": false,
-    "extra": false,
-    "puckClean": false,
-    "solution": false,
-    "rubbish1": false,
-    "rubbish2": false,
-    "type": "agency",
-    "inTraining": false
-  },
-  {
-    "name": "Sivani",
-    "birthday": "17/06",
-    "line": 1,
-    "breakGroup": 1,
     "oee": false,
     "extra": false,
     "puckClean": false,
