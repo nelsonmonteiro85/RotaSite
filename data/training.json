@@ -107,16 +107,6 @@
     "qc1",
     "puckdrying"
   ],
-  "Marc": [
-    "infeedfc",
-    "peel1",
-    "peel2",
-    "rinsestation",
-    "lenstransfer",
-    "inspection",
-    "qc1",
-    "puckdrying"
-  ],
   "Mirek": [
     "infeedfc",
     "peel1",
@@ -192,13 +182,20 @@
     "inspection",
     "puckdrying"
   ],
-  "Sivani": [
+  "Joyce": [
     "infeedfc",
     "peel1",
     "peel2",
     "rinsestation",
     "lenstransfer",
-    "inspection",
+    "puckdrying"
+  ],
+  "Iwona": [
+    "infeedfc",
+    "peel1",
+    "peel2",
+    "rinsestation",
+    "lenstransfer",
     "puckdrying"
   ]
 }
